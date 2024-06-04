@@ -54,7 +54,7 @@ import {
 /**
  * Internal dependencies
  */
-import {EmojiRecord, Emoji, Store, EmojiExt} from '../types'
+import { EmojiRecord, Emoji, Store, EmojiExt } from '../types'
 
 import {
   EMOJI_REMOTE_SRC,
