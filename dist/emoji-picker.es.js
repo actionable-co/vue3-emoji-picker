@@ -14343,7 +14343,7 @@ const _sfc_main = defineComponent({
     function onBlurText(text) {
       console.log("onBlurText - picker", text);
       input.value = text || "";
-      emit("update:text", input.value);
+      emit("blur:text", input.value);
     }
     const store = Store();
     store.updateOptions({
