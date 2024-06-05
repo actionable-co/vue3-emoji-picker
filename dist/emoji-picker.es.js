@@ -14123,6 +14123,7 @@ const _sfc_main$1 = defineComponent({
     }
     function updateCursor() {
       var _a;
+      console.log("updateCursor", elem.value, elem);
       if (elem.value) {
         cursor = ((_a = elem.value) == null ? void 0 : _a.selectionEnd) || -1;
       }
@@ -14326,11 +14327,17 @@ const _sfc_main = defineComponent({
   },
   emits: {
     "update:text": (text) => true,
+    "blur:text": (text) => true,
     select: (emoji) => true
   },
   setup(props, { emit }) {
     const input = ref(props.text);
     function onChangeText(text) {
+      input.value = text || "";
+      emit("update:text", input.value);
+    }
+    function onBlurText(text) {
+      console.log("onBlurText - picker", text);
       input.value = text || "";
       emit("update:text", input.value);
     }
@@ -14357,7 +14364,8 @@ const _sfc_main = defineComponent({
     return {
       type: props.pickerType,
       input,
-      onChangeText
+      onChangeText,
+      onBlurText
     };
   }
 });
@@ -14367,8 +14375,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     type: _ctx.type,
     text: _ctx.input,
     onSelect: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("select", $event)),
-    "onUpdate:text": _ctx.onChangeText
-  }, null, 8, ["type", "text", "onUpdate:text"]);
+    "onUpdate:text": _ctx.onChangeText,
+    "onBlur:text": _ctx.onBlurText
+  }, null, 8, ["type", "text", "onUpdate:text", "onBlur:text"]);
 }
 var Picker = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 var index = "";

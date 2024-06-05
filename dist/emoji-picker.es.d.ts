@@ -86,8 +86,10 @@ declare const _default: DefineComponent<{
     type: string;
     input: Ref<string>;
     onChangeText: (text: string | undefined) => void;
+    onBlurText: (text: string | undefined) => void;
 }, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {
     'update:text': (text: string) => true;
+    'blur:text': (text: string) => true;
     select: (emoji: EmojiExt) => true;
 }, string, VNodeProps & AllowedComponentProps & ComponentCustomProps, Readonly<ExtractPropTypes<{
     native: {
@@ -165,6 +167,7 @@ declare const _default: DefineComponent<{
 }>> & {
     onSelect?: ((emoji: EmojiExt) => any) | undefined;
     "onUpdate:text"?: ((text: string) => any) | undefined;
+    "onBlur:text"?: ((text: string) => any) | undefined;
 }, {
     native: boolean;
     hideSearch: boolean;
