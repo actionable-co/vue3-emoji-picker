@@ -155,11 +155,9 @@ export default defineComponent({
     }
 
     function onBlurText(event: any) {
-      console.log('onBlurText', elem.value)
       if (elem.value) {
         cursor = elem.value?.selectionEnd || -1
         input.value = event.target.value || ''
-        console.log('input.value', input.value)
         emit('blur:text', input.value)
       }
     }

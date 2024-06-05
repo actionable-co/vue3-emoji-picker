@@ -130,7 +130,6 @@ export default defineComponent({
      * @param text - text value
      */
     function onBlurText(text: string | undefined) {
-      console.log('onBlurText - picker', text)
       input.value = text || ''
       emit('blur:text', input.value)
     }
