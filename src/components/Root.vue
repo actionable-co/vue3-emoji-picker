@@ -61,6 +61,7 @@ import {
   onBeforeUnmount,
   inject,
   computed,
+  watch,
 } from 'vue'
 import { createPopper } from '@popperjs/core'
 
@@ -116,11 +117,20 @@ export default defineComponent({
     const button = ref<HTMLButtonElement>()
     const picker = ref<any>()
     const open = ref(false)
-    const input = ref(props.text)
+
     const isInputType = props.type === 'input' || props.type === 'textarea'
     let cursor = -1
     const { state } = inject('store') as Store
     const colorTheme = computed(() => state.options.colorTheme)
+
+    let input = ref(props.text)
+
+    watch(
+      () => props.text,
+      () => {
+        input.value = props.text
+      }
+    )
 
     /**
      * Functions
@@ -145,7 +155,7 @@ export default defineComponent({
     }
 
     function onBlurText(event: any) {
-      console.log('onBlurText', elem.value, elem)
+      console.log('onBlurText', elem.value)
       if (elem.value) {
         cursor = elem.value?.selectionEnd || -1
         input.value = event.target.value || ''

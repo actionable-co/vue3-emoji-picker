@@ -12,7 +12,7 @@
 /**
  * External dependencies
  */
-import { defineComponent, provide, ref, PropType, toRaw } from 'vue'
+import { defineComponent, provide, ref, PropType, toRaw, watch } from 'vue'
 
 /**
  * Internal dependencies
@@ -107,7 +107,14 @@ export default defineComponent({
     select: (emoji: EmojiExt) => true,
   },
   setup(props, { emit }) {
-    const input = ref(props.text)
+    let input = ref(props.text)
+
+    watch(
+      () => props.text,
+      () => {
+        input.value = props.text
+      }
+    )
 
     /**
      * Handle text change event
