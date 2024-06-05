@@ -14107,9 +14107,12 @@ const _sfc_main$1 = defineComponent({
     const { state } = inject("store");
     const colorTheme = computed(() => state.options.colorTheme);
     let input = ref(props.text);
-    watch(() => props.text, () => {
-      input.value = props.text;
-    });
+    watch(
+      () => props.text,
+      () => {
+        input.value = props.text;
+      }
+    );
     function onSelect(emoji) {
       if (isInputType) {
         const mode = state.options.mode;
@@ -14127,11 +14130,9 @@ const _sfc_main$1 = defineComponent({
     }
     function onBlurText(event) {
       var _a;
-      console.log("onBlurText", elem.value);
       if (elem.value) {
         cursor = ((_a = elem.value) == null ? void 0 : _a.selectionEnd) || -1;
         input.value = event.target.value || "";
-        console.log("input.value", input.value);
         emit("blur:text", input.value);
       }
     }
@@ -14339,15 +14340,17 @@ const _sfc_main = defineComponent({
   },
   setup(props, { emit }) {
     let input = ref(props.text);
-    watch(() => props.text, () => {
-      input.value = props.text;
-    });
+    watch(
+      () => props.text,
+      () => {
+        input.value = props.text;
+      }
+    );
     function onChangeText(text) {
       input.value = text || "";
       emit("update:text", input.value);
     }
     function onBlurText(text) {
-      console.log("onBlurText - picker", text);
       input.value = text || "";
       emit("blur:text", input.value);
     }

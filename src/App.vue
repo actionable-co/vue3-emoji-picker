@@ -77,7 +77,6 @@ export default defineComponent({
      * @param new_text
      */
     function onBlurText(new_text: string | undefined) {
-      console.log('onBlurText - app', new_text)
       text.value = new_text || ''
     }
 
