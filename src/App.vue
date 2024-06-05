@@ -14,6 +14,7 @@
     picker-type="input"
     @select="onSelect"
     @update:text="onChangeText"
+    @blur:text="onBlurText"
   />
 
   <h2>With textarea + Dark Theme</h2>
@@ -23,6 +24,7 @@
     picker-type="textarea"
     @select="onSelect"
     @update:text="onChangeText"
+    @blur:text="onBlurText"
   />
 
   <h2>With group ordering and additional groups</h2>
@@ -70,8 +72,17 @@ export default defineComponent({
       text.value = new_text || ''
     }
 
+    /**
+     * Handle text change
+     * @param new_text
+     */
+    function onBlurText(new_text: string | undefined) {
+      console.log('onBlurText - app', new_text)
+      text.value = new_text || ''
+    }
+
     function onSelect(emoji: any) {
-      alert(`${emoji.i} selected, check console log for emoji details.`)
+      // alert(`${emoji.i} selected, check console log for emoji details.`)
       console.log(emoji)
     }
 
@@ -87,6 +98,7 @@ export default defineComponent({
      */
     return {
       onChangeText,
+      onBlurText,
       text,
       onSelect,
       additionalGroups,
