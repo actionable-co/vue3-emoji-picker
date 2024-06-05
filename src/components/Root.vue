@@ -144,6 +144,7 @@ export default defineComponent({
     }
 
     function updateCursor() {
+      console.log('updateCursor', elem.value, elem)
       if (elem.value) {
         cursor = elem.value?.selectionEnd || -1
       }

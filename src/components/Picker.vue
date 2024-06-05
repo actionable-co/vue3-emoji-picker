@@ -4,6 +4,7 @@
     :text="input"
     @select="$emit('select', $event)"
     @update:text="onChangeText"
+    @blur:text="onBlurText"
   />
 </template>
 
@@ -102,6 +103,7 @@ export default defineComponent({
   },
   emits: {
     'update:text': (text: string) => true,
+    'blur:text': (text: string) => true,
     select: (emoji: EmojiExt) => true,
   },
   setup(props, { emit }) {
@@ -112,6 +114,16 @@ export default defineComponent({
      * @param text - text value
      */
     function onChangeText(text: string | undefined) {
+      input.value = text || ''
+      emit('update:text', input.value)
+    }
+
+    /**
+     * Handle text change event on blur
+     * @param text - text value
+     */
+    function onBlurText(text: string | undefined) {
+      console.log('onBlurText - picker', text)
       input.value = text || ''
       emit('update:text', input.value)
     }
@@ -156,6 +168,7 @@ export default defineComponent({
       type: props.pickerType,
       input,
       onChangeText,
+      onBlurText,
     }
   },
 })
