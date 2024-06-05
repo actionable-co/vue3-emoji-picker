@@ -14102,11 +14102,14 @@ const _sfc_main$1 = defineComponent({
     const button = ref();
     const picker = ref();
     const open = ref(false);
-    const input = ref(props.text);
     const isInputType = props.type === "input" || props.type === "textarea";
     let cursor = -1;
     const { state } = inject("store");
     const colorTheme = computed(() => state.options.colorTheme);
+    let input = ref(props.text);
+    watch(() => props.text, () => {
+      input.value = props.text;
+    });
     function onSelect(emoji) {
       if (isInputType) {
         const mode = state.options.mode;
@@ -14124,7 +14127,7 @@ const _sfc_main$1 = defineComponent({
     }
     function onBlurText(event) {
       var _a;
-      console.log("onBlurText", elem.value, elem);
+      console.log("onBlurText", elem.value);
       if (elem.value) {
         cursor = ((_a = elem.value) == null ? void 0 : _a.selectionEnd) || -1;
         input.value = event.target.value || "";
@@ -14335,7 +14338,10 @@ const _sfc_main = defineComponent({
     select: (emoji) => true
   },
   setup(props, { emit }) {
-    const input = ref(props.text);
+    let input = ref(props.text);
+    watch(() => props.text, () => {
+      input.value = props.text;
+    });
     function onChangeText(text) {
       input.value = text || "";
       emit("update:text", input.value);
