@@ -14094,7 +14094,8 @@ const _sfc_main$1 = defineComponent({
   },
   emits: {
     select: (emoji) => true,
-    "update:text": (value) => true
+    "update:text": (value) => true,
+    "blur:text": (value) => true
   },
   setup(props, { emit }) {
     const elem = ref();
@@ -14121,11 +14122,14 @@ const _sfc_main$1 = defineComponent({
       }
       emit("select", emoji);
     }
-    function updateCursor() {
+    function onBlurText(event) {
       var _a;
-      console.log("updateCursor", elem.value, elem);
+      console.log("onBlurText", elem.value, elem);
       if (elem.value) {
         cursor = ((_a = elem.value) == null ? void 0 : _a.selectionEnd) || -1;
+        input.value = event.target.value || "";
+        console.log("input.value", input.value);
+        emit("blur:text", input.value);
       }
     }
     function clickListener(event) {
@@ -14173,7 +14177,7 @@ const _sfc_main$1 = defineComponent({
       onSelect,
       input,
       elem,
-      updateCursor,
+      onBlurText,
       button,
       picker,
       isInputType,
@@ -14203,14 +14207,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         type: "text",
         class: "v3-emoji-picker-input",
         onInput: _cache[0] || (_cache[0] = (...args) => _ctx.onChangeText && _ctx.onChangeText(...args)),
-        onBlur: _cache[1] || (_cache[1] = (...args) => _ctx.updateCursor && _ctx.updateCursor(...args))
+        onBlur: _cache[1] || (_cache[1] = (...args) => _ctx.onBlurText && _ctx.onBlurText(...args))
       }, null, 40, _hoisted_3)) : (openBlock(), createElementBlock("textarea", {
         key: 1,
         ref: "elem",
         value: _ctx.input,
         class: "v3-emoji-picker-textarea",
         onInput: _cache[2] || (_cache[2] = (...args) => _ctx.onChangeText && _ctx.onChangeText(...args)),
-        onBlur: _cache[3] || (_cache[3] = (...args) => _ctx.updateCursor && _ctx.updateCursor(...args))
+        onBlur: _cache[3] || (_cache[3] = (...args) => _ctx.onBlurText && _ctx.onBlurText(...args))
       }, null, 40, _hoisted_4)),
       createElementVNode("div", {
         class: normalizeClass(["v3-input-picker-wrap", _ctx.open ? "v3-picker-is-open" : ""])

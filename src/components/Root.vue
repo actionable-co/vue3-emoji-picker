@@ -8,7 +8,7 @@
         type="text"
         class="v3-emoji-picker-input"
         @input="onChangeText"
-        @blur="updateCursor"
+        @blur="onBlurText"
       />
       <textarea
         v-else
@@ -16,7 +16,7 @@
         :value="input"
         class="v3-emoji-picker-textarea"
         @input="onChangeText"
-        @blur="updateCursor"
+        @blur="onBlurText"
       />
       <div
         class="v3-input-picker-wrap"
@@ -109,6 +109,7 @@ export default defineComponent({
   emits: {
     select: (emoji: EmojiExt) => true,
     'update:text': (value: string) => true,
+    'blur:text': (value: string) => true,
   },
   setup(props, { emit }) {
     const elem = ref<HTMLInputElement>()
@@ -143,10 +144,13 @@ export default defineComponent({
       emit('select', emoji)
     }
 
-    function updateCursor() {
-      console.log('updateCursor', elem.value, elem)
+    function onBlurText(event: any) {
+      console.log('onBlurText', elem.value, elem)
       if (elem.value) {
         cursor = elem.value?.selectionEnd || -1
+        input.value = event.target.value || ''
+        console.log('input.value', input.value)
+        emit('blur:text', input.value)
       }
     }
 
@@ -209,7 +213,7 @@ export default defineComponent({
       onSelect,
       input,
       elem,
-      updateCursor,
+      onBlurText,
       button,
       picker,
       isInputType,
