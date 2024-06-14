@@ -149,6 +149,7 @@ export default defineComponent({
           input.value += emoji.i
         }
         emit('update:text', input.value)
+        emit('blur:text', input.value)
       }
 
       emit('select', emoji)
