@@ -14134,7 +14134,6 @@ const _sfc_main$1 = defineComponent({
       if (elem.value) {
         cursor = ((_a = elem.value) == null ? void 0 : _a.selectionEnd) || -1;
         input.value = event.target.value || "";
-        console.log("root", event.target.value, input.value);
         emit("blur:text", input.value);
       }
     }
@@ -14354,7 +14353,6 @@ const _sfc_main = defineComponent({
     }
     function onBlurText(text) {
       input.value = text || "";
-      console.log("input.value", input.value);
       emit("blur:text", input.value);
     }
     const store = Store();
