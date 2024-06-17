@@ -148,10 +148,11 @@ export default defineComponent({
         } else {
           input.value += emoji.i
         }
+        //Emit on update in the text
         emit('update:text', input.value)
+        //Emit on blur from the text
         emit('blur:text', input.value)
       }
-
       emit('select', emoji)
     }
 
