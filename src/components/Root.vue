@@ -117,14 +117,11 @@ export default defineComponent({
     const button = ref<HTMLButtonElement>()
     const picker = ref<any>()
     const open = ref(false)
-
     const isInputType = props.type === 'input' || props.type === 'textarea'
     let cursor = -1
     const { state } = inject('store') as Store
     const colorTheme = computed(() => state.options.colorTheme)
-
     let input = ref(props.text)
-
     watch(
       () => props.text,
       () => {
@@ -148,10 +145,10 @@ export default defineComponent({
         } else {
           input.value += emoji.i
         }
-        //Emit on update in the text
-        emit('update:text', input.value)
         //Emit on blur from the text
         emit('blur:text', input.value)
+        //Emit on update in the text
+        emit('update:text', input.value)
       }
       emit('select', emoji)
     }

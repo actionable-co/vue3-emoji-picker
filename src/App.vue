@@ -68,7 +68,7 @@ export default defineComponent({
      * Handle text change
      * @param new_text
      */
-    function onChangeText(new_text: string | undefined) {
+    function onChangeText(new_text: string | '') {
       text.value = new_text || ''
     }
 

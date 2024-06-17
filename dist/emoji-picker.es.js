@@ -14124,8 +14124,8 @@ const _sfc_main$1 = defineComponent({
         } else {
           input.value += emoji.i;
         }
-        emit("update:text", input.value);
         emit("blur:text", input.value);
+        emit("update:text", input.value);
       }
       emit("select", emoji);
     }
