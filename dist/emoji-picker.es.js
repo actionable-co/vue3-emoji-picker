@@ -1,4 +1,4 @@
-import { reactive, readonly, toRaw, defineComponent, inject, ref, computed, getCurrentInstance, watch, openBlock, createElementBlock, createElementVNode, normalizeClass, Fragment, renderList, withDirectives, toDisplayString, vShow, createCommentVNode, createTextVNode, vModelText, onMounted, onBeforeUnmount, resolveComponent, createVNode, provide, createBlock } from "vue";
+import { reactive, readonly, toRaw, defineComponent, inject, ref, computed, getCurrentInstance, watch, openBlock, createElementBlock, createElementVNode, normalizeClass, Fragment, renderList, withDirectives, toDisplayString, vShow, createCommentVNode, vModelText, onMounted, onBeforeUnmount, resolveComponent, createVNode, provide, createBlock } from "vue";
 const EMOJI_REMOTE_SRC = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64";
 const GROUP_NAMES = {
   recent: "Recently used",
@@ -13814,7 +13814,6 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
             [vShow, _ctx.emojis[key]]
           ]) : createCommentVNode("", true),
           withDirectives(createElementVNode("div", _hoisted_3$3, [
-            createTextVNode(toDisplayString(_ctx.native) + " ", 1),
             (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.emojis[key], (emoji) => {
               return openBlock(), createElementBlock("button", {
                 key: emoji.r,
