@@ -11,6 +11,7 @@
             {{ groupNames[key] }}
           </h5>
           <div v-show="emojis[key]" class="v3-emojis">
+            {{ native }}
             <button
               v-for="emoji in emojis[key]"
               :key="emoji.r"

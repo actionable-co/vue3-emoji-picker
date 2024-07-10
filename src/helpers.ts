@@ -13,6 +13,7 @@ import {
  * @param unicode - emoji unicode
  */
 export function unicodeToEmoji(unicode: string) {
+  console.log('unicodeToEmoji', unicode)
   return unicode
     .split('-')
     .map((hex) => parseInt(hex, 16))
