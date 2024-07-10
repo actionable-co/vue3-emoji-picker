@@ -1,7 +1,7 @@
 import { ColorTheme, Emoji, GroupNames } from './types'
 
 export const EMOJI_REMOTE_SRC =
-  'https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64'
+  'https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64'
 
 // ./data/groups.json
 export const GROUP_NAMES: GroupNames = {

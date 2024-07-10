@@ -1,5 +1,5 @@
 import { reactive, readonly, toRaw, defineComponent, inject, ref, computed, getCurrentInstance, watch, openBlock, createElementBlock, createElementVNode, normalizeClass, Fragment, renderList, withDirectives, toDisplayString, vShow, createCommentVNode, vModelText, onMounted, onBeforeUnmount, resolveComponent, createVNode, provide, createBlock } from "vue";
-const EMOJI_REMOTE_SRC = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64";
+const EMOJI_REMOTE_SRC = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64";
 const GROUP_NAMES = {
   recent: "Recently used",
   smileys_people: "Smiles & People",
