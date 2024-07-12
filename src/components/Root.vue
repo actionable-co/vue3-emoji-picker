@@ -134,7 +134,6 @@ export default defineComponent({
      */
     function onSelect(emoji: EmojiExt) {
       if (isInputType) {
-        console.log('emoji', emoji)
         const mode = state.options.mode
         if (mode === 'prepend') {
           input.value = emoji.i + input.value

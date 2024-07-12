@@ -14115,7 +14115,6 @@ const _sfc_main$1 = defineComponent({
     );
     function onSelect(emoji) {
       if (isInputType) {
-        console.log("emoji", emoji);
         const mode = state.options.mode;
         if (mode === "prepend") {
           input.value = emoji.i + input.value;
