@@ -64,8 +64,8 @@ $skin-tones: (
         }
       }
     }
-    .is-mac span {
-      font-family: 'Apple Color Emoji';
+    span {
+      font-family: 'apple color emoji', 'segoe ui emoji', 'noto color emoji', 'android emoji', 'emojisymbols', 'emojione mozilla', 'twemoji mozilla', 'segoe ui symbol';
     }
   }
 }

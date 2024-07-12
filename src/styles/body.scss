@@ -1,3 +1,7 @@
+@font-face {
+  font-family: 'apple color emoji', 'segoe ui emoji', 'noto color emoji', 'android emoji', 'emojisymbols', 'emojione mozilla', 'twemoji mozilla', 'segoe ui symbol';
+  src: url("./NotoColorEmoji.ttf");
+}
 .v3-emoji-picker {
   // picker body
   .v3-body {
@@ -69,8 +73,8 @@
         }
       }
 
-      &.is-mac .v3-emojis button {
-        font-family: 'Apple Color Emoji';
+      .v3-emojis button {
+        font-family: 'apple color emoji', 'segoe ui emoji', 'noto color emoji', 'android emoji', 'emojisymbols', 'emojione mozilla', 'twemoji mozilla', 'segoe ui symbol';
       }
     }
   }
