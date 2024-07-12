@@ -13789,9 +13789,8 @@ const _hoisted_1$3 = { class: "v3-body" };
 const _hoisted_2$3 = ["id"];
 const _hoisted_3$3 = { class: "v3-emojis" };
 const _hoisted_4$3 = ["onMouseenter", "onClick"];
-const _hoisted_5$3 = { key: 0 };
-const _hoisted_6$2 = ["src", "alt", "onError"];
-const _hoisted_7$1 = {
+const _hoisted_5$3 = ["src", "alt", "onError"];
+const _hoisted_6$2 = {
   key: 1,
   class: "v3-no-result"
 };
@@ -13821,19 +13820,18 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                 onMouseenter: ($event) => _ctx.handleMouseEnter(emoji),
                 onClick: ($event) => _ctx.handleClick(emoji)
               }, [
-                _ctx.native ? (openBlock(), createElementBlock("span", _hoisted_5$3, toDisplayString(_ctx.unicodeToEmoji(emoji.r)), 1)) : (openBlock(), createElementBlock("img", {
-                  key: 1,
+                createElementVNode("img", {
                   src: _ctx.EMOJI_REMOTE_SRC + `/${emoji.r}.png`,
                   alt: emoji.n[0],
                   onError: ($event) => _ctx.handleError($event, emoji.r)
-                }, null, 40, _hoisted_6$2))
+                }, null, 40, _hoisted_5$3)
               ], 40, _hoisted_4$3);
             }), 128))
           ], 512), [
             [vShow, _ctx.emojis[key]]
           ])
         ], 8, _hoisted_2$3);
-      }), 128)) : (openBlock(), createElementBlock("span", _hoisted_7$1, " No emoji has been found! "))
+      }), 128)) : (openBlock(), createElementBlock("span", _hoisted_6$2, " No emoji has been found! "))
     ], 2)
   ]);
 }
