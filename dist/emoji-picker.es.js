@@ -12325,7 +12325,6 @@ function Store() {
     state.search = value;
   };
   const updateEmoji = (value) => {
-    console.log("updateEmoji", value);
     state.emoji = value;
   };
   const updateActiveGroup = (group) => {
@@ -13661,6 +13660,7 @@ function unicodeToEmoji(unicode) {
 }
 function filterEmojis(emojis2, keyword, skinTone, disabledGroups = []) {
   const _emojiData = {};
+  let skippedEmoji = ["263a-fe0f"];
   var isEdge = navigator.userAgent.indexOf("Edg") !== -1;
   var isChrome = navigator.userAgent.indexOf("Chrome") !== -1;
   var isEdgeChromium = isChrome && navigator.userAgent.indexOf("Edg") != -1;
@@ -13673,8 +13673,6 @@ function filterEmojis(emojis2, keyword, skinTone, disabledGroups = []) {
       var _a;
       if (emoji[EMOJI_NAME_KEY][0].includes(keyword.toLocaleLowerCase())) {
         let result = emoji[EMOJI_UNICODE_KEY];
-        let skippedEmoji = ["263a-fe0f"];
-        console.log(key, emoji, result, isEdge, isChrome, isEdgeChromium);
         if (skippedEmoji.includes(result) && (isEdge || isChrome || isEdgeChromium)) {
           return;
         }
