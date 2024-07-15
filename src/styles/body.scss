@@ -1,3 +1,7 @@
+@font-face {
+  font-family: 'Noto Color Emoji';
+  src: url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+}
 .v3-emoji-picker {
   // picker body
   .v3-body {
@@ -70,9 +74,15 @@
       }
 
       .v3-emojis button {
-        font-family: 'apple color emoji', 'segoe ui emoji', 'noto color emoji',
-          'android emoji', 'emojisymbols', 'emojione mozilla', 'twemoji mozilla',
-          'segoe ui symbol';
+        font-weight: 400;
+        font-family: "Twemoji Mozilla",
+               "Apple Color Emoji",
+               "Segoe UI Emoji",
+               "Segoe UI Symbol",
+               "Noto Color Emoji",
+               "EmojiOne Color",
+               "Android Emoji",
+               sans-serif;
       }
     }
   }

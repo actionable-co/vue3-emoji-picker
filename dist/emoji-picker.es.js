@@ -12325,6 +12325,7 @@ function Store() {
     state.search = value;
   };
   const updateEmoji = (value) => {
+    console.log("updateEmoji", value);
     state.emoji = value;
   };
   const updateActiveGroup = (group) => {
@@ -13655,10 +13656,14 @@ var createPopper = /* @__PURE__ */ popperGenerator({
 });
 var smileys_people = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZD0iTSAxNiA0IEMgOS4zODI4MTMgNCA0IDkuMzgyODEzIDQgMTYgQyA0IDIyLjYxNzE4OCA5LjM4MjgxMyAyOCAxNiAyOCBDIDIyLjYxNzE4OCAyOCAyOCAyMi42MTcxODggMjggMTYgQyAyOCA5LjM4MjgxMyAyMi42MTcxODggNCAxNiA0IFogTSAxNiA2IEMgMjEuNTM1MTU2IDYgMjYgMTAuNDY0ODQ0IDI2IDE2IEMgMjYgMjEuNTM1MTU2IDIxLjUzNTE1NiAyNiAxNiAyNiBDIDEwLjQ2NDg0NCAyNiA2IDIxLjUzNTE1NiA2IDE2IEMgNiAxMC40NjQ4NDQgMTAuNDY0ODQ0IDYgMTYgNiBaIE0gMTEuNSAxMiBDIDEwLjY3MTg3NSAxMiAxMCAxMi42NzE4NzUgMTAgMTMuNSBDIDEwIDE0LjMyODEyNSAxMC42NzE4NzUgMTUgMTEuNSAxNSBDIDEyLjMyODEyNSAxNSAxMyAxNC4zMjgxMjUgMTMgMTMuNSBDIDEzIDEyLjY3MTg3NSAxMi4zMjgxMjUgMTIgMTEuNSAxMiBaIE0gMjAuNSAxMiBDIDE5LjY3MTg3NSAxMiAxOSAxMi42NzE4NzUgMTkgMTMuNSBDIDE5IDE0LjMyODEyNSAxOS42NzE4NzUgMTUgMjAuNSAxNSBDIDIxLjMyODEyNSAxNSAyMiAxNC4zMjgxMjUgMjIgMTMuNSBDIDIyIDEyLjY3MTg3NSAyMS4zMjgxMjUgMTIgMjAuNSAxMiBaIE0gMTAuODEyNSAxOSBMIDkuMDkzNzUgMjAgQyAxMC40NzY1NjMgMjIuMzg2NzE5IDEzLjA0Njg3NSAyNCAxNiAyNCBDIDE4Ljk1MzEyNSAyNCAyMS41MjM0MzggMjIuMzg2NzE5IDIyLjkwNjI1IDIwIEwgMjEuMTg3NSAxOSBDIDIwLjE0ODQzOCAyMC43OTI5NjkgMTguMjI2NTYzIDIyIDE2IDIyIEMgMTMuNzczNDM4IDIyIDExLjg1MTU2MyAyMC43OTI5NjkgMTAuODEyNSAxOSBaIi8+PC9zdmc+";
 function unicodeToEmoji(unicode) {
-  return unicode.split("-").map((hex) => parseInt(hex, 16)).map((hex) => String.fromCodePoint(hex)).join("");
+  let code = unicode.split("-").map((hex) => parseInt(hex, 16)).map((hex) => String.fromCodePoint(hex)).join("");
+  return code;
 }
 function filterEmojis(emojis2, keyword, skinTone, disabledGroups = []) {
   const _emojiData = {};
+  var isEdge = navigator.userAgent.indexOf("Edg") !== -1;
+  var isChrome = navigator.userAgent.indexOf("Chrome") !== -1;
+  var isEdgeChromium = isChrome && navigator.userAgent.indexOf("Edg") != -1;
   Object.keys(emojis2).forEach((key) => {
     if (disabledGroups.includes(key)) {
       return;
@@ -13668,6 +13673,11 @@ function filterEmojis(emojis2, keyword, skinTone, disabledGroups = []) {
       var _a;
       if (emoji[EMOJI_NAME_KEY][0].includes(keyword.toLocaleLowerCase())) {
         let result = emoji[EMOJI_UNICODE_KEY];
+        let skippedEmoji = ["263a-fe0f"];
+        console.log(key, emoji, result, isEdge, isChrome, isEdgeChromium);
+        if (skippedEmoji.includes(result) && (isEdge || isChrome || isEdgeChromium)) {
+          return;
+        }
         if (skinTone !== SKIN_TONE_NEUTRAL && Array.isArray(emoji[EMOJI_VARIATIONS_KEY])) {
           const v_index = ((_a = emoji[EMOJI_VARIATIONS_KEY]) == null ? void 0 : _a.findIndex(
             (v) => v.includes(skinTone)
@@ -13789,8 +13799,9 @@ const _hoisted_1$3 = { class: "v3-body" };
 const _hoisted_2$3 = ["id"];
 const _hoisted_3$3 = { class: "v3-emojis" };
 const _hoisted_4$3 = ["onMouseenter", "onClick"];
-const _hoisted_5$3 = ["src", "alt", "onError"];
-const _hoisted_6$2 = {
+const _hoisted_5$3 = { key: 0 };
+const _hoisted_6$2 = ["src", "alt", "onError"];
+const _hoisted_7$1 = {
   key: 1,
   class: "v3-no-result"
 };
@@ -13820,18 +13831,19 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                 onMouseenter: ($event) => _ctx.handleMouseEnter(emoji),
                 onClick: ($event) => _ctx.handleClick(emoji)
               }, [
-                createElementVNode("img", {
+                _ctx.native ? (openBlock(), createElementBlock("span", _hoisted_5$3, toDisplayString(_ctx.unicodeToEmoji(emoji.r)), 1)) : (openBlock(), createElementBlock("img", {
+                  key: 1,
                   src: _ctx.EMOJI_REMOTE_SRC + `/${emoji.r}.png`,
                   alt: emoji.n[0],
                   onError: ($event) => _ctx.handleError($event, emoji.r)
-                }, null, 40, _hoisted_5$3)
+                }, null, 40, _hoisted_6$2))
               ], 40, _hoisted_4$3);
             }), 128))
           ], 512), [
             [vShow, _ctx.emojis[key]]
           ])
         ], 8, _hoisted_2$3);
-      }), 128)) : (openBlock(), createElementBlock("span", _hoisted_6$2, " No emoji has been found! "))
+      }), 128)) : (openBlock(), createElementBlock("span", _hoisted_7$1, " No emoji has been found! "))
     ], 2)
   ]);
 }

@@ -65,9 +65,15 @@ $skin-tones: (
       }
     }
     span {
-      font-family: 'apple color emoji', 'segoe ui emoji', 'noto color emoji',
-        'android emoji', 'emojisymbols', 'emojione mozilla', 'twemoji mozilla',
-        'segoe ui symbol';
+      font-weight: 400;
+      font-family: "Twemoji Mozilla",
+               "Apple Color Emoji",
+               "Segoe UI Emoji",
+               "Segoe UI Symbol",
+               "Noto Color Emoji",
+               "EmojiOne Color",
+               "Android Emoji",
+               sans-serif;
     }
   }
 }
