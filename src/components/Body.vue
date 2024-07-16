@@ -19,10 +19,11 @@
               @click="handleClick(emoji)"
             >
               <!-- Native emoji -->
-              <!-- <span v-if="native">{{ unicodeToEmoji(emoji.r) }}</span> -->
+              <span v-if="native">{{ unicodeToEmoji(emoji.r) }}</span>
 
-              <!-- Load from CDN when options.native = false -->
+              <!-- Load from CDN when options.native = true -->
               <img
+                v-else
                 :src="EMOJI_REMOTE_SRC + `/${emoji.r}.png`"
                 :alt="emoji.n[0]"
                 @error="handleError($event, emoji.r)"

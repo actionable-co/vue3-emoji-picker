@@ -13,11 +13,13 @@ import {
  * @param unicode - emoji unicode
  */
 export function unicodeToEmoji(unicode: string) {
-  return unicode
+  let code = unicode
     .split('-')
     .map((hex) => parseInt(hex, 16))
     .map((hex) => String.fromCodePoint(hex))
     .join('')
+
+  return code
 }
 
 /**
@@ -35,8 +37,20 @@ export function filterEmojis(
   disabledGroups: Group[] = []
 ): EmojiRecord {
   const _emojiData = {} as EmojiRecord
+  let skippedEmoji = ['263a-fe0f']
+  // Edge 20+
+  var isEdge = navigator.userAgent.indexOf('Edg') !== -1
+
+  // Chrome 1 - 79
+  var isChrome = navigator.userAgent.indexOf('Chrome') !== -1
+
+  // Edge (based on chromium) detection
+  var isEdgeChromium = isChrome && navigator.userAgent.indexOf('Edg') != -1
 
   Object.keys(emojis).forEach((key) => {
+    // if (skipEmojis.includes[key]) {
+    //   return;
+    // }
     /**
      * Exclude disabled emoji group from the record
      */
@@ -50,7 +64,12 @@ export function filterEmojis(
       // if search key match
       if (emoji[EMOJI_NAME_KEY][0].includes(keyword.toLocaleLowerCase())) {
         let result = emoji[EMOJI_UNICODE_KEY]
-
+        if (
+          skippedEmoji.includes(result) &&
+          (isEdge || isChrome || isEdgeChromium)
+        ) {
+          return
+        }
         // check skin tone
         if (
           skinTone !== SKIN_TONE_NEUTRAL &&
