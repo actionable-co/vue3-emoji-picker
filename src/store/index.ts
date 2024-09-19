@@ -26,7 +26,9 @@ const defaultOptions: Record<string, any> = {
 async function getRecentEmojis() {
   const db = await openDB(DB_KEY, DB_VERSION)
   const store = db.transaction(STORE_KEY, 'readonly').objectStore(STORE_KEY)
-  return await store.getAll()
+  const storedEmoji = await store.getAll()
+  db.close()
+  return storedEmoji
 }
 
 export default function Store(): Store {
@@ -153,6 +155,7 @@ export default function Store(): Store {
       id: 0,
       value: JSON.stringify(state.recent),
     })
+    db.close()
     return
   }
 

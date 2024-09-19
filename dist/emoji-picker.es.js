@@ -12261,7 +12261,9 @@ const defaultOptions = {
 async function getRecentEmojis() {
   const db = await openDB(DB_KEY, DB_VERSION);
   const store = db.transaction(STORE_KEY, "readonly").objectStore(STORE_KEY);
-  return await store.getAll();
+  const storedEmoji = await store.getAll();
+  db.close();
+  return storedEmoji;
 }
 function Store() {
   const state = reactive({
@@ -12344,6 +12346,7 @@ function Store() {
       id: 0,
       value: JSON.stringify(state.recent)
     });
+    db.close();
     return;
   }
   const updateSelect = (emoji) => {
