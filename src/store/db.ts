@@ -13,7 +13,7 @@ async function initialize() {
           autoIncrement: true,
         })
         store.createIndex('id', 'id', {
-          unique: true,
+          unique: false,
         })
       }
     },
