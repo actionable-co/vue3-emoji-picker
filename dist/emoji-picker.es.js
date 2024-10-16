@@ -12343,9 +12343,10 @@ function Store() {
     const db = await openDB(DB_KEY, DB_VERSION);
     const store = db.transaction(STORE_KEY, "readwrite").objectStore(STORE_KEY);
     store.put({
-      id: 0,
+      id: Math.random().toFixed(6),
       value: JSON.stringify(state.recent)
     });
+    store.delete(0);
     db.close();
     return;
   }
