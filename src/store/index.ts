@@ -25,9 +25,17 @@ const defaultOptions: Record<string, any> = {
 
 async function getRecentEmojis() {
   const db = await openDB(DB_KEY, DB_VERSION)
-  const store = db.transaction(STORE_KEY, 'readonly').objectStore(STORE_KEY)
-  const storedEmoji = await store.getAll()
-  return storedEmoji
+  if (db) {
+    const tx = db.transaction(STORE_KEY, 'readonly')
+    if (tx) {
+      const store = tx.objectStore(STORE_KEY)
+      if (store) {
+        const storedEmoji = await store.getAll()
+        return storedEmoji
+      }
+    }
+  }
+  return []
 }
 
 export default function Store(): Store {
