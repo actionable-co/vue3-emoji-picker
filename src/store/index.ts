@@ -27,7 +27,6 @@ async function getRecentEmojis() {
   const db = await openDB(DB_KEY, DB_VERSION)
   const store = db.transaction(STORE_KEY, 'readonly').objectStore(STORE_KEY)
   const storedEmoji = await store.getAll()
-  db.close()
   return storedEmoji
 }
 
@@ -150,13 +149,19 @@ export default function Store(): Store {
    */
   async function updateLocalStore() {
     const db = await openDB(DB_KEY, DB_VERSION)
-    const store = db.transaction(STORE_KEY, 'readwrite').objectStore(STORE_KEY)
-    store.put({
-      id: Math.random().toFixed(6),
-      value: JSON.stringify(state.recent),
-    })
-    store.delete(0)
-    db.close()
+    if (db) {
+      const transaction = db.transaction(STORE_KEY, 'readwrite')
+      if (transaction) {
+        const store = transaction.objectStore(STORE_KEY)
+        if (store) {
+          store.delete(0)
+          store.put({
+            id: Math.random(),
+            value: JSON.stringify(state.recent),
+          })
+        }
+      }
+    }
     return
   }
 

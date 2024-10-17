@@ -13,12 +13,11 @@ async function initialize() {
           autoIncrement: true,
         })
         store.createIndex('id', 'id', {
-          unique: false,
+          unique: true,
         })
       }
     },
   })
-  db.close()
 }
 
 export default initialize

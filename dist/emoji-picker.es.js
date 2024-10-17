@@ -12229,7 +12229,7 @@ const DB_KEY = "EMJ";
 const STORE_KEY = "emojis";
 const DB_VERSION = 3;
 async function initialize() {
-  const db = await openDB(DB_KEY, DB_VERSION, {
+  await openDB(DB_KEY, DB_VERSION, {
     upgrade(db2, oldVersion) {
       if (!db2.objectStoreNames.contains(STORE_KEY)) {
         const store = db2.createObjectStore(STORE_KEY, {
@@ -12237,12 +12237,11 @@ async function initialize() {
           autoIncrement: true
         });
         store.createIndex("id", "id", {
-          unique: false
+          unique: true
         });
       }
     }
   });
-  db.close();
 }
 initialize();
 const defaultOptions = {
@@ -12262,7 +12261,6 @@ async function getRecentEmojis() {
   const db = await openDB(DB_KEY, DB_VERSION);
   const store = db.transaction(STORE_KEY, "readonly").objectStore(STORE_KEY);
   const storedEmoji = await store.getAll();
-  db.close();
   return storedEmoji;
 }
 function Store() {
@@ -12341,13 +12339,19 @@ function Store() {
   };
   async function updateLocalStore() {
     const db = await openDB(DB_KEY, DB_VERSION);
-    const store = db.transaction(STORE_KEY, "readwrite").objectStore(STORE_KEY);
-    store.put({
-      id: Math.random().toFixed(6),
-      value: JSON.stringify(state.recent)
-    });
-    store.delete(0);
-    db.close();
+    if (db) {
+      const transaction = db.transaction(STORE_KEY, "readwrite");
+      if (transaction) {
+        const store = transaction.objectStore(STORE_KEY);
+        if (store) {
+          store.delete(0);
+          store.put({
+            id: Math.random(),
+            value: JSON.stringify(state.recent)
+          });
+        }
+      }
+    }
     return;
   }
   const updateSelect = (emoji) => {
