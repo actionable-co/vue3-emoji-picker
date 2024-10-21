@@ -12227,11 +12227,12 @@ replaceTraps((oldTraps) => ({
 }));
 const DB_KEY = "EMJ";
 const STORE_KEY = "emojis";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 async function initialize() {
-  await openDB(DB_KEY, DB_VERSION, {
+  const db = await openDB(DB_KEY, DB_VERSION, {
     upgrade(db2, oldVersion) {
-      if (!db2.objectStoreNames.contains(STORE_KEY)) {
+      var _a;
+      if (!((_a = db2 == null ? void 0 : db2.objectStoreNames) == null ? void 0 : _a.contains(STORE_KEY))) {
         const store = db2.createObjectStore(STORE_KEY, {
           keyPath: "id",
           autoIncrement: true
@@ -12240,8 +12241,15 @@ async function initialize() {
           unique: true
         });
       }
+    },
+    async blocked() {
+      await db.close();
+    },
+    async blocking() {
+      await db.close();
     }
   });
+  return db;
 }
 initialize();
 const defaultOptions = {
