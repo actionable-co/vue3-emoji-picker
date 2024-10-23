@@ -12045,9 +12045,7 @@ function getCursorAdvanceMethods() {
     IDBCursor.prototype.continuePrimaryKey
   ]);
 }
-const cursorRequestMap = /* @__PURE__ */ new WeakMap();
 const transactionDoneMap = /* @__PURE__ */ new WeakMap();
-const transactionStoreNamesMap = /* @__PURE__ */ new WeakMap();
 const transformCache = /* @__PURE__ */ new WeakMap();
 const reverseTransformCache = /* @__PURE__ */ new WeakMap();
 function promisifyRequest(request) {
@@ -12066,12 +12064,6 @@ function promisifyRequest(request) {
     };
     request.addEventListener("success", success);
     request.addEventListener("error", error);
-  });
-  promise.then((value) => {
-    if (value instanceof IDBCursor) {
-      cursorRequestMap.set(value, request);
-    }
-  }).catch(() => {
   });
   reverseTransformCache.set(promise, request);
   return promise;
@@ -12104,9 +12096,6 @@ let idbProxyTraps = {
     if (target instanceof IDBTransaction) {
       if (prop === "done")
         return transactionDoneMap.get(target);
-      if (prop === "objectStoreNames") {
-        return target.objectStoreNames || transactionStoreNamesMap.get(target);
-      }
       if (prop === "store") {
         return receiver.objectStoreNames[1] ? void 0 : receiver.objectStore(receiver.objectStoreNames[0]);
       }
@@ -12128,17 +12117,10 @@ function replaceTraps(callback) {
   idbProxyTraps = callback(idbProxyTraps);
 }
 function wrapFunction(func) {
-  if (func === IDBDatabase.prototype.transaction && !("objectStoreNames" in IDBTransaction.prototype)) {
-    return function(storeNames, ...args) {
-      const tx = func.call(unwrap(this), storeNames, ...args);
-      transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [storeNames]);
-      return wrap(tx);
-    };
-  }
   if (getCursorAdvanceMethods().includes(func)) {
     return function(...args) {
       func.apply(unwrap(this), args);
-      return wrap(cursorRequestMap.get(this));
+      return wrap(this.request);
     };
   }
   return function(...args) {
@@ -12224,6 +12206,54 @@ replaceTraps((oldTraps) => ({
   ...oldTraps,
   get: (target, prop, receiver) => getMethod(target, prop) || oldTraps.get(target, prop, receiver),
   has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop)
+}));
+const advanceMethodProps = ["continue", "continuePrimaryKey", "advance"];
+const methodMap = {};
+const advanceResults = /* @__PURE__ */ new WeakMap();
+const ittrProxiedCursorToOriginalProxy = /* @__PURE__ */ new WeakMap();
+const cursorIteratorTraps = {
+  get(target, prop) {
+    if (!advanceMethodProps.includes(prop))
+      return target[prop];
+    let cachedFunc = methodMap[prop];
+    if (!cachedFunc) {
+      cachedFunc = methodMap[prop] = function(...args) {
+        advanceResults.set(this, ittrProxiedCursorToOriginalProxy.get(this)[prop](...args));
+      };
+    }
+    return cachedFunc;
+  }
+};
+async function* iterate(...args) {
+  let cursor = this;
+  if (!(cursor instanceof IDBCursor)) {
+    cursor = await cursor.openCursor(...args);
+  }
+  if (!cursor)
+    return;
+  cursor = cursor;
+  const proxiedCursor = new Proxy(cursor, cursorIteratorTraps);
+  ittrProxiedCursorToOriginalProxy.set(proxiedCursor, cursor);
+  reverseTransformCache.set(proxiedCursor, unwrap(cursor));
+  while (cursor) {
+    yield proxiedCursor;
+    cursor = await (advanceResults.get(proxiedCursor) || cursor.continue());
+    advanceResults.delete(proxiedCursor);
+  }
+}
+function isIteratorProp(target, prop) {
+  return prop === Symbol.asyncIterator && instanceOfAny(target, [IDBIndex, IDBObjectStore, IDBCursor]) || prop === "iterate" && instanceOfAny(target, [IDBIndex, IDBObjectStore]);
+}
+replaceTraps((oldTraps) => ({
+  ...oldTraps,
+  get(target, prop, receiver) {
+    if (isIteratorProp(target, prop))
+      return iterate;
+    return oldTraps.get(target, prop, receiver);
+  },
+  has(target, prop) {
+    return isIteratorProp(target, prop) || oldTraps.has(target, prop);
+  }
 }));
 const DB_KEY = "EMJ";
 const STORE_KEY = "emojis";
