@@ -23,19 +23,11 @@ const defaultOptions: Record<string, any> = {
   groupIcons: {},
 }
 
-async function getRecentEmojis() {
+async function getRecentEmojis(): Promise<any[]> {
   const db = await openDB(DB_KEY, DB_VERSION)
-  if (db) {
-    const tx = db.transaction(STORE_KEY, 'readonly')
-    if (tx) {
-      const store = tx.objectStore(STORE_KEY)
-      if (store) {
-        const storedEmoji = await store.getAll()
-        return storedEmoji
-      }
-    }
-  }
-  return []
+  const tx = db.transaction(STORE_KEY, 'readonly')
+  const store = tx.objectStore(STORE_KEY)
+  return await store.getAll()
 }
 
 export default function Store(): Store {
@@ -164,7 +156,7 @@ export default function Store(): Store {
         if (store) {
           store.delete(0)
           store.put({
-            id: Math.random(),
+            id: 0,
             value: JSON.stringify(state.recent),
           })
         }

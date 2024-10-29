@@ -12258,7 +12258,37 @@ replaceTraps((oldTraps) => ({
 const DB_KEY = "EMJ";
 const STORE_KEY = "emojis";
 const DB_VERSION = 4;
+function isIndexedDBAvailable() {
+  try {
+    return "indexedDB" in window && indexedDB !== null && typeof indexedDB.open === "function";
+  } catch (e) {
+    return false;
+  }
+}
+function getiOSVersion() {
+  const agent = window.navigator.userAgent;
+  const start2 = agent.indexOf("OS ");
+  if ((agent.indexOf("iPhone") > -1 || agent.indexOf("iPad") > -1) && start2 > -1) {
+    return parseInt(agent.substring(start2 + 3, agent.indexOf(" ", start2)), 10);
+  }
+  return null;
+}
 async function initialize() {
+  if (!isIndexedDBAvailable()) {
+    console.log("IndexedDB not available");
+    return [];
+  }
+  const iOSVersion = getiOSVersion();
+  const usePrivateMode = iOSVersion && iOSVersion < 13;
+  if (usePrivateMode) {
+    try {
+      localStorage.setItem("test", "1");
+      localStorage.removeItem("test");
+    } catch (e) {
+      console.log("Private mode detected - IndexedDB may not be available");
+      return [];
+    }
+  }
   const db = await openDB(DB_KEY, DB_VERSION, {
     upgrade(db2, oldVersion) {
       var _a;
@@ -12297,17 +12327,9 @@ const defaultOptions = {
 };
 async function getRecentEmojis() {
   const db = await openDB(DB_KEY, DB_VERSION);
-  if (db) {
-    const tx = db.transaction(STORE_KEY, "readonly");
-    if (tx) {
-      const store = tx.objectStore(STORE_KEY);
-      if (store) {
-        const storedEmoji = await store.getAll();
-        return storedEmoji;
-      }
-    }
-  }
-  return [];
+  const tx = db.transaction(STORE_KEY, "readonly");
+  const store = tx.objectStore(STORE_KEY);
+  return await store.getAll();
 }
 function Store() {
   const state = reactive({
@@ -12392,7 +12414,7 @@ function Store() {
         if (store) {
           store.delete(0);
           store.put({
-            id: Math.random(),
+            id: 0,
             value: JSON.stringify(state.recent)
           });
         }
