@@ -12045,9 +12045,7 @@ function getCursorAdvanceMethods() {
     IDBCursor.prototype.continuePrimaryKey
   ]);
 }
-const cursorRequestMap = /* @__PURE__ */ new WeakMap();
 const transactionDoneMap = /* @__PURE__ */ new WeakMap();
-const transactionStoreNamesMap = /* @__PURE__ */ new WeakMap();
 const transformCache = /* @__PURE__ */ new WeakMap();
 const reverseTransformCache = /* @__PURE__ */ new WeakMap();
 function promisifyRequest(request) {
@@ -12066,12 +12064,6 @@ function promisifyRequest(request) {
     };
     request.addEventListener("success", success);
     request.addEventListener("error", error);
-  });
-  promise.then((value) => {
-    if (value instanceof IDBCursor) {
-      cursorRequestMap.set(value, request);
-    }
-  }).catch(() => {
   });
   reverseTransformCache.set(promise, request);
   return promise;
@@ -12104,9 +12096,6 @@ let idbProxyTraps = {
     if (target instanceof IDBTransaction) {
       if (prop === "done")
         return transactionDoneMap.get(target);
-      if (prop === "objectStoreNames") {
-        return target.objectStoreNames || transactionStoreNamesMap.get(target);
-      }
       if (prop === "store") {
         return receiver.objectStoreNames[1] ? void 0 : receiver.objectStore(receiver.objectStoreNames[0]);
       }
@@ -12128,17 +12117,10 @@ function replaceTraps(callback) {
   idbProxyTraps = callback(idbProxyTraps);
 }
 function wrapFunction(func) {
-  if (func === IDBDatabase.prototype.transaction && !("objectStoreNames" in IDBTransaction.prototype)) {
-    return function(storeNames, ...args) {
-      const tx = func.call(unwrap(this), storeNames, ...args);
-      transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [storeNames]);
-      return wrap(tx);
-    };
-  }
   if (getCursorAdvanceMethods().includes(func)) {
     return function(...args) {
       func.apply(unwrap(this), args);
-      return wrap(cursorRequestMap.get(this));
+      return wrap(this.request);
     };
   }
   return function(...args) {
@@ -12225,10 +12207,88 @@ replaceTraps((oldTraps) => ({
   get: (target, prop, receiver) => getMethod(target, prop) || oldTraps.get(target, prop, receiver),
   has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop)
 }));
+const advanceMethodProps = ["continue", "continuePrimaryKey", "advance"];
+const methodMap = {};
+const advanceResults = /* @__PURE__ */ new WeakMap();
+const ittrProxiedCursorToOriginalProxy = /* @__PURE__ */ new WeakMap();
+const cursorIteratorTraps = {
+  get(target, prop) {
+    if (!advanceMethodProps.includes(prop))
+      return target[prop];
+    let cachedFunc = methodMap[prop];
+    if (!cachedFunc) {
+      cachedFunc = methodMap[prop] = function(...args) {
+        advanceResults.set(this, ittrProxiedCursorToOriginalProxy.get(this)[prop](...args));
+      };
+    }
+    return cachedFunc;
+  }
+};
+async function* iterate(...args) {
+  let cursor = this;
+  if (!(cursor instanceof IDBCursor)) {
+    cursor = await cursor.openCursor(...args);
+  }
+  if (!cursor)
+    return;
+  cursor = cursor;
+  const proxiedCursor = new Proxy(cursor, cursorIteratorTraps);
+  ittrProxiedCursorToOriginalProxy.set(proxiedCursor, cursor);
+  reverseTransformCache.set(proxiedCursor, unwrap(cursor));
+  while (cursor) {
+    yield proxiedCursor;
+    cursor = await (advanceResults.get(proxiedCursor) || cursor.continue());
+    advanceResults.delete(proxiedCursor);
+  }
+}
+function isIteratorProp(target, prop) {
+  return prop === Symbol.asyncIterator && instanceOfAny(target, [IDBIndex, IDBObjectStore, IDBCursor]) || prop === "iterate" && instanceOfAny(target, [IDBIndex, IDBObjectStore]);
+}
+replaceTraps((oldTraps) => ({
+  ...oldTraps,
+  get(target, prop, receiver) {
+    if (isIteratorProp(target, prop))
+      return iterate;
+    return oldTraps.get(target, prop, receiver);
+  },
+  has(target, prop) {
+    return isIteratorProp(target, prop) || oldTraps.has(target, prop);
+  }
+}));
 const DB_KEY = "EMJ";
 const STORE_KEY = "emojis";
 const DB_VERSION = 4;
+function isIndexedDBAvailable() {
+  try {
+    return "indexedDB" in window && indexedDB !== null && typeof indexedDB.open === "function";
+  } catch (e) {
+    return false;
+  }
+}
+function getiOSVersion() {
+  const agent = window.navigator.userAgent;
+  const start2 = agent.indexOf("OS ");
+  if ((agent.indexOf("iPhone") > -1 || agent.indexOf("iPad") > -1) && start2 > -1) {
+    return parseInt(agent.substring(start2 + 3, agent.indexOf(" ", start2)), 10);
+  }
+  return null;
+}
 async function initialize() {
+  if (!isIndexedDBAvailable()) {
+    console.log("IndexedDB not available");
+    return [];
+  }
+  const iOSVersion = getiOSVersion();
+  const usePrivateMode = iOSVersion && iOSVersion < 13;
+  if (usePrivateMode) {
+    try {
+      localStorage.setItem("test", "1");
+      localStorage.removeItem("test");
+    } catch (e) {
+      console.log("Private mode detected - IndexedDB may not be available");
+      return [];
+    }
+  }
   const db = await openDB(DB_KEY, DB_VERSION, {
     upgrade(db2, oldVersion) {
       var _a;
@@ -12267,17 +12327,9 @@ const defaultOptions = {
 };
 async function getRecentEmojis() {
   const db = await openDB(DB_KEY, DB_VERSION);
-  if (db) {
-    const tx = db.transaction(STORE_KEY, "readonly");
-    if (tx) {
-      const store = tx.objectStore(STORE_KEY);
-      if (store) {
-        const storedEmoji = await store.getAll();
-        return storedEmoji;
-      }
-    }
-  }
-  return [];
+  const tx = db.transaction(STORE_KEY, "readonly");
+  const store = tx.objectStore(STORE_KEY);
+  return await store.getAll();
 }
 function Store() {
   const state = reactive({
@@ -12362,7 +12414,7 @@ function Store() {
         if (store) {
           store.delete(0);
           store.put({
-            id: Math.random(),
+            id: 0,
             value: JSON.stringify(state.recent)
           });
         }
