@@ -12258,14 +12258,14 @@ replaceTraps((oldTraps) => ({
 const DB_KEY = "EMJ";
 const STORE_KEY = "emojis";
 const DB_VERSION = 4;
-function isIndexedDBAvailable() {
+function isIndexedDBAvailable$1() {
   try {
     return "indexedDB" in window && indexedDB !== null && typeof indexedDB.open === "function";
   } catch (e) {
     return false;
   }
 }
-function getiOSVersion() {
+function getiOSVersion$1() {
   const agent = window.navigator.userAgent;
   const start2 = agent.indexOf("OS ");
   if ((agent.indexOf("iPhone") > -1 || agent.indexOf("iPad") > -1) && start2 > -1) {
@@ -12274,11 +12274,11 @@ function getiOSVersion() {
   return null;
 }
 async function initialize() {
-  if (!isIndexedDBAvailable()) {
+  if (!isIndexedDBAvailable$1()) {
     console.log("IndexedDB not available");
     return [];
   }
-  const iOSVersion = getiOSVersion();
+  const iOSVersion = getiOSVersion$1();
   const usePrivateMode = iOSVersion && iOSVersion < 13;
   if (usePrivateMode) {
     try {
@@ -12325,7 +12325,37 @@ const defaultOptions = {
   groupOrder: [],
   groupIcons: {}
 };
+function isIndexedDBAvailable() {
+  try {
+    return "indexedDB" in window && indexedDB !== null && typeof indexedDB.open === "function";
+  } catch (e) {
+    return false;
+  }
+}
+function getiOSVersion() {
+  const agent = window.navigator.userAgent;
+  const start2 = agent.indexOf("OS ");
+  if ((agent.indexOf("iPhone") > -1 || agent.indexOf("iPad") > -1) && start2 > -1) {
+    return parseInt(agent.substring(start2 + 3, agent.indexOf(" ", start2)), 10);
+  }
+  return null;
+}
 async function getRecentEmojis() {
+  if (!isIndexedDBAvailable()) {
+    console.log("IndexedDB not available");
+    return [];
+  }
+  const iOSVersion = getiOSVersion();
+  const usePrivateMode = iOSVersion && iOSVersion < 13;
+  if (usePrivateMode) {
+    try {
+      localStorage.setItem("test", "1");
+      localStorage.removeItem("test");
+    } catch (e) {
+      console.log("Private mode detected - IndexedDB may not be available");
+      return [];
+    }
+  }
   const db = await openDB(DB_KEY, DB_VERSION);
   const tx = db.transaction(STORE_KEY, "readonly");
   const store = tx.objectStore(STORE_KEY);
