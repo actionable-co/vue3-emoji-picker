@@ -23,7 +23,52 @@ const defaultOptions: Record<string, any> = {
   groupIcons: {},
 }
 
+// Add this check before attempting IndexedDB operations
+function isIndexedDBAvailableToGet() {
+  try {
+    return (
+      'indexedDB' in window &&
+      indexedDB !== null &&
+      typeof indexedDB.open === 'function'
+    )
+  } catch (e) {
+    return false
+  }
+}
+
+// Version checking for iOS
+function getiOSVersionToGet() {
+  const agent = window.navigator.userAgent
+  const start = agent.indexOf('OS ')
+  if (
+    (agent.indexOf('iPhone') > -1 || agent.indexOf('iPad') > -1) &&
+    start > -1
+  ) {
+    return parseInt(agent.substring(start + 3, agent.indexOf(' ', start)), 10)
+  }
+  return null
+}
+
 async function getRecentEmojis(): Promise<any[]> {
+  if (!isIndexedDBAvailableToGet()) {
+    console.log('IndexedDB not available')
+    return []
+  }
+
+  const iOSVersion = getiOSVersionToGet()
+  const usePrivateMode = iOSVersion && iOSVersion < 13 // Private mode detection for older iOS
+
+  if (usePrivateMode) {
+    // Test write to detect private mode
+    try {
+      localStorage.setItem('test', '1')
+      localStorage.removeItem('test')
+    } catch (e) {
+      console.log('Private mode detected - IndexedDB may not be available')
+      return []
+    }
+  }
+
   const db = await openDB(DB_KEY, DB_VERSION)
   const tx = db.transaction(STORE_KEY, 'readonly')
   const store = tx.objectStore(STORE_KEY)
