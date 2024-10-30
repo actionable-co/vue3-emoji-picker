@@ -12258,14 +12258,14 @@ replaceTraps((oldTraps) => ({
 const DB_KEY = "EMJ";
 const STORE_KEY = "emojis";
 const DB_VERSION = 4;
-function isIndexedDBAvailable$1() {
+function isIndexedDBAvailable() {
   try {
     return "indexedDB" in window && indexedDB !== null && typeof indexedDB.open === "function";
   } catch (e) {
     return false;
   }
 }
-function getiOSVersion$1() {
+function getiOSVersion() {
   const agent = window.navigator.userAgent;
   const start2 = agent.indexOf("OS ");
   if ((agent.indexOf("iPhone") > -1 || agent.indexOf("iPad") > -1) && start2 > -1) {
@@ -12274,11 +12274,11 @@ function getiOSVersion$1() {
   return null;
 }
 async function initialize() {
-  if (!isIndexedDBAvailable$1()) {
+  if (!isIndexedDBAvailable()) {
     console.log("IndexedDB not available");
     return [];
   }
-  const iOSVersion = getiOSVersion$1();
+  const iOSVersion = getiOSVersion();
   const usePrivateMode = iOSVersion && iOSVersion < 13;
   if (usePrivateMode) {
     try {
@@ -12325,14 +12325,14 @@ const defaultOptions = {
   groupOrder: [],
   groupIcons: {}
 };
-function isIndexedDBAvailable() {
+function isIndexedDBAvailableToGet() {
   try {
     return "indexedDB" in window && indexedDB !== null && typeof indexedDB.open === "function";
   } catch (e) {
     return false;
   }
 }
-function getiOSVersion() {
+function getiOSVersionToGet() {
   const agent = window.navigator.userAgent;
   const start2 = agent.indexOf("OS ");
   if ((agent.indexOf("iPhone") > -1 || agent.indexOf("iPad") > -1) && start2 > -1) {
@@ -12341,11 +12341,11 @@ function getiOSVersion() {
   return null;
 }
 async function getRecentEmojis() {
-  if (!isIndexedDBAvailable()) {
+  if (!isIndexedDBAvailableToGet()) {
     console.log("IndexedDB not available");
     return [];
   }
-  const iOSVersion = getiOSVersion();
+  const iOSVersion = getiOSVersionToGet();
   const usePrivateMode = iOSVersion && iOSVersion < 13;
   if (usePrivateMode) {
     try {

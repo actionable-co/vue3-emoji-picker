@@ -24,7 +24,7 @@ const defaultOptions: Record<string, any> = {
 }
 
 // Add this check before attempting IndexedDB operations
-function isIndexedDBAvailable() {
+function isIndexedDBAvailableToGet() {
   try {
     return (
       'indexedDB' in window &&
@@ -37,7 +37,7 @@ function isIndexedDBAvailable() {
 }
 
 // Version checking for iOS
-function getiOSVersion() {
+function getiOSVersionToGet() {
   const agent = window.navigator.userAgent
   const start = agent.indexOf('OS ')
   if (
@@ -50,12 +50,12 @@ function getiOSVersion() {
 }
 
 async function getRecentEmojis(): Promise<any[]> {
-  if (!isIndexedDBAvailable()) {
+  if (!isIndexedDBAvailableToGet()) {
     console.log('IndexedDB not available')
     return []
   }
 
-  const iOSVersion = getiOSVersion()
+  const iOSVersion = getiOSVersionToGet()
   const usePrivateMode = iOSVersion && iOSVersion < 13 // Private mode detection for older iOS
 
   if (usePrivateMode) {
