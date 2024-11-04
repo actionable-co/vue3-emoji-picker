@@ -69,10 +69,27 @@ async function getRecentEmojis(): Promise<any[]> {
     }
   }
 
-  const db = await openDB(DB_KEY, DB_VERSION)
-  const tx = db.transaction(STORE_KEY, 'readonly')
-  const store = tx.objectStore(STORE_KEY)
-  return await store.getAll()
+  // const db = await openDB(DB_KEY, DB_VERSION)
+  // const tx = db.transaction(STORE_KEY, 'readonly')
+  // const store = tx.objectStore(STORE_KEY)
+  // return await store.getAll()
+  try {
+    const db = await openDB(DB_KEY, DB_VERSION)
+    if (!db) return []
+
+    // Verify object store exists before creating transaction
+    if (!db.objectStoreNames.contains(STORE_KEY)) {
+      console.error('Object store not found', STORE_KEY, db.objectStoreNames)
+      return []
+    }
+
+    const tx = db.transaction(STORE_KEY, 'readonly')
+    const store = tx.objectStore(STORE_KEY)
+    return await store.getAll()
+  } catch (error) {
+    console.error('Error getting items from openDB store:', error)
+    return []
+  }
 }
 
 export default function Store(): Store {
