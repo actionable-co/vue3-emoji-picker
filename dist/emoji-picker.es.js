@@ -12361,14 +12361,21 @@ async function getRecentEmojis() {
     if (!db)
       return [];
     if (!db.objectStoreNames.contains(STORE_KEY)) {
-      console.log("getRecentEmojis: Object store not found", STORE_KEY, db.objectStoreNames);
+      console.log(
+        "getRecentEmojis: Object store not found",
+        STORE_KEY,
+        db.objectStoreNames
+      );
       return [];
     }
     const tx = db.transaction(STORE_KEY, "readonly");
     const store = tx.objectStore(STORE_KEY);
     return await store.getAll();
   } catch (error) {
-    console.log("getRecentEmojis: Error getting items from openDB store:", error);
+    console.log(
+      "getRecentEmojis: Error getting items from openDB store:",
+      error
+    );
     return [];
   }
 }
@@ -12452,7 +12459,11 @@ function Store() {
       if (!db)
         return [];
       if (!db.objectStoreNames.contains(STORE_KEY)) {
-        console.log("updateLocalStore: Object store not found", STORE_KEY, db.objectStoreNames);
+        console.log(
+          "updateLocalStore: Object store not found",
+          STORE_KEY,
+          db.objectStoreNames
+        );
         return [];
       }
       const trans = db.transaction(STORE_KEY, "readwrite");
@@ -12465,7 +12476,10 @@ function Store() {
         });
       }
     } catch (error) {
-      console.log("updateLocalStore: Error getting items from openDB store:", error);
+      console.log(
+        "updateLocalStore: Error getting items from openDB store:",
+        error
+      );
       return [];
     }
   }
