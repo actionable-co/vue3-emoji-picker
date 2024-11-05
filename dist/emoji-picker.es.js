@@ -12361,14 +12361,14 @@ async function getRecentEmojis() {
     if (!db)
       return [];
     if (!db.objectStoreNames.contains(STORE_KEY)) {
-      console.error("Object store not found", STORE_KEY, db.objectStoreNames);
+      console.log("getRecentEmojis: Object store not found", STORE_KEY, db.objectStoreNames);
       return [];
     }
     const tx = db.transaction(STORE_KEY, "readonly");
     const store = tx.objectStore(STORE_KEY);
     return await store.getAll();
   } catch (error) {
-    console.error("Error getting items from openDB store:", error);
+    console.log("getRecentEmojis: Error getting items from openDB store:", error);
     return [];
   }
 }
@@ -12447,21 +12447,27 @@ function Store() {
     initialize2();
   };
   async function updateLocalStore() {
-    const db = await openDB(DB_KEY, DB_VERSION);
-    if (db) {
-      const transaction = db.transaction(STORE_KEY, "readwrite");
-      if (transaction) {
-        const store = transaction.objectStore(STORE_KEY);
-        if (store) {
-          store.delete(0);
-          store.put({
-            id: 0,
-            value: JSON.stringify(state.recent)
-          });
-        }
+    try {
+      const db = await openDB(DB_KEY, DB_VERSION);
+      if (!db)
+        return [];
+      if (!db.objectStoreNames.contains(STORE_KEY)) {
+        console.log("updateLocalStore: Object store not found", STORE_KEY, db.objectStoreNames);
+        return [];
       }
+      const trans = db.transaction(STORE_KEY, "readwrite");
+      const store = trans.objectStore(STORE_KEY);
+      if (store) {
+        store.delete(0);
+        store.put({
+          id: 0,
+          value: JSON.stringify(state.recent)
+        });
+      }
+    } catch (error) {
+      console.log("updateLocalStore: Error getting items from openDB store:", error);
+      return [];
     }
-    return;
   }
   const updateSelect = (emoji) => {
     if (state.options.displayRecent !== true)

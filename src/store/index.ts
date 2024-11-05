@@ -49,7 +49,7 @@ function getiOSVersionToGet() {
   return null
 }
 
-async function getRecentEmojis(): Promise<any[]> {
+async function getRecentEmojis() {
   if (!isIndexedDBAvailableToGet()) {
     console.log('IndexedDB not available')
     return []
@@ -69,17 +69,17 @@ async function getRecentEmojis(): Promise<any[]> {
     }
   }
 
-  // const db = await openDB(DB_KEY, DB_VERSION)
-  // const tx = db.transaction(STORE_KEY, 'readonly')
-  // const store = tx.objectStore(STORE_KEY)
-  // return await store.getAll()
   try {
     const db = await openDB(DB_KEY, DB_VERSION)
     if (!db) return []
 
     // Verify object store exists before creating transaction
     if (!db.objectStoreNames.contains(STORE_KEY)) {
-      console.error('Object store not found', STORE_KEY, db.objectStoreNames)
+      console.log(
+        'getRecentEmojis: Object store not found',
+        STORE_KEY,
+        db.objectStoreNames
+      )
       return []
     }
 
@@ -87,7 +87,10 @@ async function getRecentEmojis(): Promise<any[]> {
     const store = tx.objectStore(STORE_KEY)
     return await store.getAll()
   } catch (error) {
-    console.error('Error getting items from openDB store:', error)
+    console.log(
+      'getRecentEmojis: Error getting items from openDB store:',
+      error
+    )
     return []
   }
 }
@@ -210,21 +213,35 @@ export default function Store(): Store {
    * @return void;
    */
   async function updateLocalStore() {
-    const db = await openDB(DB_KEY, DB_VERSION)
-    if (db) {
-      const transaction = db.transaction(STORE_KEY, 'readwrite')
-      if (transaction) {
-        const store = transaction.objectStore(STORE_KEY)
-        if (store) {
-          store.delete(0)
-          store.put({
-            id: 0,
-            value: JSON.stringify(state.recent),
-          })
-        }
+    try {
+      const db = await openDB(DB_KEY, DB_VERSION)
+      if (!db) return []
+
+      // Verify object store exists before creating transaction
+      if (!db.objectStoreNames.contains(STORE_KEY)) {
+        console.log(
+          'updateLocalStore: Object store not found',
+          STORE_KEY,
+          db.objectStoreNames
+        )
+        return []
       }
+      const trans = db.transaction(STORE_KEY, 'readwrite')
+      const store = trans.objectStore(STORE_KEY)
+      if (store) {
+        store.delete(0)
+        store.put({
+          id: 0,
+          value: JSON.stringify(state.recent),
+        })
+      }
+    } catch (error) {
+      console.log(
+        'updateLocalStore: Error getting items from openDB store:',
+        error
+      )
+      return []
     }
-    return
   }
 
   /**
