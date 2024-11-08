@@ -61,8 +61,8 @@ async function getRecentEmojis() {
   if (usePrivateMode) {
     // Test write to detect private mode
     try {
-      localStorage.setItem('test', '1')
-      localStorage.removeItem('test')
+      window.localStorage.setItem('test', '1')
+      window.localStorage.removeItem('test')
     } catch (e) {
       console.log('Private mode detected - IndexedDB may not be available')
       return []
@@ -219,11 +219,6 @@ export default function Store(): Store {
 
       // Verify object store exists before creating transaction
       if (!db.objectStoreNames.contains(STORE_KEY)) {
-        console.log(
-          'updateLocalStore: Object store not found',
-          STORE_KEY,
-          db.objectStoreNames
-        )
         return []
       }
       const trans = db.transaction(STORE_KEY, 'readwrite')
@@ -236,10 +231,6 @@ export default function Store(): Store {
         })
       }
     } catch (error) {
-      console.log(
-        'updateLocalStore: Error getting items from openDB store:',
-        error
-      )
       return []
     }
   }

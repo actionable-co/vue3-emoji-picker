@@ -12275,17 +12275,15 @@ function getiOSVersion() {
 }
 async function initialize() {
   if (!isIndexedDBAvailable()) {
-    console.log("IndexedDB not available");
     return [];
   }
   const iOSVersion = getiOSVersion();
   const usePrivateMode = iOSVersion && iOSVersion < 13;
   if (usePrivateMode) {
     try {
-      localStorage.setItem("test", "1");
-      localStorage.removeItem("test");
+      window.localStorage.setItem("test", "1");
+      window.localStorage.removeItem("test");
     } catch (e) {
-      console.log("Private mode detected - IndexedDB may not be available");
       return [];
     }
   }
@@ -12349,8 +12347,8 @@ async function getRecentEmojis() {
   const usePrivateMode = iOSVersion && iOSVersion < 13;
   if (usePrivateMode) {
     try {
-      localStorage.setItem("test", "1");
-      localStorage.removeItem("test");
+      window.localStorage.setItem("test", "1");
+      window.localStorage.removeItem("test");
     } catch (e) {
       console.log("Private mode detected - IndexedDB may not be available");
       return [];
@@ -12459,11 +12457,6 @@ function Store() {
       if (!db)
         return [];
       if (!db.objectStoreNames.contains(STORE_KEY)) {
-        console.log(
-          "updateLocalStore: Object store not found",
-          STORE_KEY,
-          db.objectStoreNames
-        );
         return [];
       }
       const trans = db.transaction(STORE_KEY, "readwrite");
@@ -12476,10 +12469,6 @@ function Store() {
         });
       }
     } catch (error) {
-      console.log(
-        "updateLocalStore: Error getting items from openDB store:",
-        error
-      );
       return [];
     }
   }

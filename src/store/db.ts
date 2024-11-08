@@ -32,7 +32,6 @@ function getiOSVersion() {
 
 async function initialize(): Promise<IDBPDatabase | []> {
   if (!isIndexedDBAvailable()) {
-    console.log('IndexedDB not available')
     return []
   }
 
@@ -42,10 +41,9 @@ async function initialize(): Promise<IDBPDatabase | []> {
   if (usePrivateMode) {
     // Test write to detect private mode
     try {
-      localStorage.setItem('test', '1')
-      localStorage.removeItem('test')
+      window.localStorage.setItem('test', '1')
+      window.localStorage.removeItem('test')
     } catch (e) {
-      console.log('Private mode detected - IndexedDB may not be available')
       return []
     }
   }
