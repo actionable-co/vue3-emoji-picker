@@ -39,13 +39,17 @@ export function filterEmojis(
   const _emojiData = {} as EmojiRecord
   let skippedEmoji = ['263a-fe0f']
   // Edge 20+
-  var isEdge = window.navigator.userAgent.indexOf('Edge') !== -1
+  const userAgent =
+    typeof window !== 'undefined' && window.navigator
+      ? window.navigator.userAgent
+      : ''
+  var isEdge = userAgent.indexOf('Edge') !== -1
 
   // Chrome 1 - 79
-  var isChrome = window.navigator.userAgent.indexOf('Chrome') !== -1
+  var isChrome = userAgent.indexOf('Chrome') !== -1
 
   // Edge (based on chromium) detection
-  var isEdgeChromium = isChrome && window.navigator.userAgent.indexOf('Edge') != -1
+  var isEdgeChromium = isChrome && userAgent.indexOf('Edge') != -1
 
   Object.keys(emojis).forEach((key) => {
     // if (skipEmojis.includes[key]) {
@@ -106,8 +110,9 @@ export function filterEmojis(
  */
 export function isMac() {
   let platform =
-    // @ts-ignore
-    window.navigator?.userAgentData?.platform || window.navigator?.platform || 'unknown'
+    typeof window !== 'undefined' && window.navigator
+      ? (window.navigator as any)?.userAgentData?.platform || window.navigator?.platform
+      : 'unknown'
   return platform.toUpperCase().indexOf('MAC') !== -1
 }
 
