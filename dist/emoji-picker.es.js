@@ -13823,9 +13823,10 @@ function unicodeToEmoji(unicode) {
 function filterEmojis(emojis2, keyword, skinTone, disabledGroups = []) {
   const _emojiData = {};
   let skippedEmoji = ["263a-fe0f"];
-  var isEdge = window.navigator.userAgent.indexOf("Edge") !== -1;
-  var isChrome = window.navigator.userAgent.indexOf("Chrome") !== -1;
-  var isEdgeChromium = isChrome && window.navigator.userAgent.indexOf("Edge") != -1;
+  const userAgent = typeof window !== "undefined" && window.navigator ? window.navigator.userAgent : "";
+  var isEdge = userAgent.indexOf("Edge") !== -1;
+  var isChrome = userAgent.indexOf("Chrome") !== -1;
+  var isEdgeChromium = isChrome && userAgent.indexOf("Edge") != -1;
   Object.keys(emojis2).forEach((key) => {
     if (disabledGroups.includes(key)) {
       return;
@@ -13860,7 +13861,7 @@ function filterEmojis(emojis2, keyword, skinTone, disabledGroups = []) {
 }
 function isMac() {
   var _a, _b, _c;
-  let platform = ((_b = (_a = window.navigator) == null ? void 0 : _a.userAgentData) == null ? void 0 : _b.platform) || ((_c = window.navigator) == null ? void 0 : _c.platform) || "unknown";
+  let platform = typeof window !== "undefined" && window.navigator ? ((_b = (_a = window.navigator) == null ? void 0 : _a.userAgentData) == null ? void 0 : _b.platform) || ((_c = window.navigator) == null ? void 0 : _c.platform) : "unknown";
   return platform.toUpperCase().indexOf("MAC") !== -1;
 }
 function snakeToCapitalizedCase(string) {
