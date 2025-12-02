@@ -170,6 +170,12 @@ export default defineComponent({
       }
     }
 
+    function keydownListener(event: KeyboardEvent) {
+      if (event.key === 'Escape' && open.value && isInputType) {
+        open.value = false
+      }
+    }
+
     function setupPopper() {
       if (button.value && picker.value && isInputType) {
         let offset = state.options.offset
@@ -191,6 +197,7 @@ export default defineComponent({
         })
 
         document.body.addEventListener('click', clickListener)
+        document.addEventListener('keydown', keydownListener)
       }
     }
 
@@ -209,6 +216,7 @@ export default defineComponent({
     // cleanup
     onBeforeUnmount(() => {
       document.body.removeEventListener('click', clickListener)
+      document.removeEventListener('keydown', keydownListener)
     })
 
     /**
