@@ -149,6 +149,12 @@ export default defineComponent({
         emit('blur:text', input.value)
         //Emit on update in the text
         emit('update:text', input.value)
+        // Close the picker after selection for better accessibility
+        open.value = false
+        // Return focus to the input/textarea element for screen reader users
+        if (elem.value) {
+          elem.value.focus()
+        }
       }
       emit('select', emoji)
     }
@@ -173,6 +179,10 @@ export default defineComponent({
     function keydownListener(event: KeyboardEvent) {
       if (event.key === 'Escape' && open.value && isInputType) {
         open.value = false
+        // Return focus to the input/textarea element for better accessibility
+        if (elem.value) {
+          elem.value.focus()
+        }
       }
     }
 
